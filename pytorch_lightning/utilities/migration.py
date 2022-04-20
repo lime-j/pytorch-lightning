@@ -37,10 +37,10 @@ class pl_legacy_patch:
 
     def __init__(self) -> None:
         # Create a lock to ensure no race condition with deleting sys modules
-        self.lock = threading.Lock()
+        self._lock = threading.Lock()
 
     def __enter__(self) -> None:
-        self.lock.acquire()
+        self._lock.acquire()
         # `pl.utilities.argparse_utils` was renamed to `pl.utilities.argparse`
         legacy_argparse_module = ModuleType("pytorch_lightning.utilities.argparse_utils")
         sys.modules["pytorch_lightning.utilities.argparse_utils"] = legacy_argparse_module
@@ -55,4 +55,4 @@ class pl_legacy_patch:
         if hasattr(pytorch_lightning.utilities.argparse, "_gpus_arg_default"):
             delattr(pytorch_lightning.utilities.argparse, "_gpus_arg_default")
         del sys.modules["pytorch_lightning.utilities.argparse_utils"]
-        self.lock.release()
+        self._lock.release()
