@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 import sys
+import threading
 
 import pytorch_lightning
 from pytorch_lightning.utilities.migration import pl_legacy_patch
@@ -34,3 +35,25 @@ def test_patch_legacy_gpus_arg_default():
         assert callable(_gpus_arg_default)
     assert not hasattr(pytorch_lightning.utilities.argparse, "_gpus_arg_default")
     assert not hasattr(pytorch_lightning.utilities.argparse, "_gpus_arg_default")
+
+# Tests to ensure pl_legacy_patch works as expected with multithreading.
+# The context manager `pl_legacy_patch` uses sys.modules, hence explicit tests.
+def test_threading_patch_legacy_argparse_utils():
+    thread1 = threading.Thread(target=test_patch_legacy_argparse_utils)
+    thread2 = threading.Thread(target=test_patch_legacy_argparse_utils)
+
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
+
+def test_threading_patch_legacy_gpus_arg_default():
+    thread1 = threading.Thread(target=test_patch_legacy_gpus_arg_default)
+    thread2 = threading.Thread(target=test_patch_legacy_gpus_arg_default)
+
+    thread1.start()
+    thread2.start()
+
+    thread1.join()
+    thread2.join()
