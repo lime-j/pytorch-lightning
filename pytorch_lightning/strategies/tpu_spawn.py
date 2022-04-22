@@ -157,7 +157,7 @@ class TPUSpawnStrategy(DDPSpawnStrategy):
 
     def process_dataloader(self, dataloader: DataLoader) -> MpDeviceLoader:
         TPUSpawnStrategy._validate_dataloader(dataloader)
-        dataloader = MpDeviceLoader(dataloader, self.root_device)
+        dataloader = MpDeviceLoader(dataloader, self.root_device, loader_prefetch_size=16, device_prefetch_size=8)
         # Mimic interface to torch.utils.data.DataLoader
         dataloader.dataset = dataloader._loader.dataset
         return dataloader
