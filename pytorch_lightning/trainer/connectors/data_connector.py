@@ -235,6 +235,7 @@ class DataConnector:
             and not has_iterable_dataset(dataloader)
             # `DistributedSampler` is never used with `poptorch.DataLoader`
             and not isinstance(self.trainer.accelerator, IPUAccelerator)
+            and not trainer_fn in (TrainerFn.VALIDATING, TrainerFn.TESTING)
         )
 
     # TODO: shuffle here is kept for BC. Remove it once data_loading.py is removed (#11248)
